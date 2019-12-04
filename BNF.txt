@@ -1,0 +1,88 @@
+<program>  ->      <vars> <block>
+<block>    ->      start <vars> <stats> stop
+<vars>     ->      empty | var Identifier : Integer <vars>
+<expr>     ->      <A> + <expr>  | <A>
+<A>        ->      <N> - <A> | <N>
+<N>        ->      <M> / <N> | <M> * <N> | <M>
+<M>        ->      - <M> |  <R>
+<R>        ->      [ <expr> ] | Identifier | Integer
+<stats>    ->      <stat> ; <mStat>
+<mStat>    ->      empty |  <stat> ;  <mStat>
+<stat>     ->      <in> | <out> | <block> | <if> | <loop> | <assign>
+<in>       ->      in  Identifier
+<out>      ->      out <expr>
+<if>       ->      cond ( ( <expr> <RO> <expr> ) ) <stat>
+<loop>     ->      iterate ( ( <expr> <RO> <expr> ) ) <stat>
+<assign>   ->      Identifier  < <  <expr>
+<RO>       ->      < | < <  | >  | > >  | =  |   < >
+
+
+<program> ->  first(<vars><block>) = {empty, var, start}
+
+<block> ->   first (start <vars> <stats> stop) = {start}
+
+<vars> ->  first( empty) = {empty}
+		 first( var Identifier : Integer <vars>) = { var }
+
+<expr> ->  <A> + <expr> | <A>
+	(remove <A>)
+	first( + <expr>) = {+}
+
+<A> -> <N> - <A> | <N>
+	(remove <N>)
+	first( - <A>) = {-}
+
+<N> -> <M> / <N> | <M> * <N> | <M>
+	(remove <M>)
+	first(/ <N>) = {/}
+	first(* <N>) = {*}
+
+
+<M> -> - <M> |  <R>
+	first(- <M>) = {-}
+	first(<R>) = {[ , Identifier, Integer}
+
+<R> -> [ <expr> ] | Identifier | Integer
+	first([ <expr> ]) = {[}
+	first(Identifier) = {Identifier}
+	first(Integer) = {Integer}
+
+<stats> -> <stat> ; <mStat>
+	first(<stat> ; <mStat>)= {in , out, start, cond, iterate, Identifier}
+
+<mStat> -> empty |  <stat> ;  <mStat>
+	first(empty) = {empty}
+	first(<stat> ; <mStat>) = { in, out, start, cond, iterate, Identifier}
+
+<stat> -> <in> | <out> | <block> | <if> | <loop> | <assign>
+	first(<in>) = {in}
+	first(<out>) = {out}
+	first(<block>) = {start}
+	first(<if>) = {cond}
+	first(<loop>) = {iterate}
+	first(<assign>} = {Identifier}
+
+<in> -> in  Identifier 
+	first(in Identifier) = {in}
+
+<out> -> out <expr>
+	first(out <expr>) = {out}
+
+<if> -> cond ( ( <expr> <RO> <expr> ) ) <stat>
+	first(cond ( ( <expr> <RO> <expr> ) ) <stat>) = {cond}
+
+<loop> -> iterate ( ( <expr> <RO> <expr> ) ) <stat>
+	first(iterate ( ( <expr> <RO> <expr> ) ) <stat>) = {iterate}
+
+<assign> -> Identifier  < <  <expr>
+	first(Identifier  < <  <expr>) = {Identifier) 
+
+<RO> ->  < | < <  | >  | > >  | =  |   < >                         
+	first(<) = {<}
+	first(< <) = {<}
+    first(>) = {>}
+    first(> >) = {>}
+    first(=) = {=}
+    first(<>) = {<}
+
+
