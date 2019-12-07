@@ -1,4 +1,5 @@
 import DataStructures.Token;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -14,13 +15,21 @@ public class CodeGenerator {
     private int varCounter;
     private Stack<Integer> scopeCountStack = new Stack<>();
     private int scopeCount;
-    private StringBuilder code = new StringBuilder();
     private int tempCount = 0;
     private int loopLabelCount = 0;
     private int outLabelCount = 0;
     private int ifCounter = 0;
 
     public void startCodeGeneration(TreeNode node) {
+
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(fileName, false));
+            out.write("");
+            out.close();
+        } catch (IOException e){
+            System.out.println(e);
+            System.exit(-1);
+        }
 
         PreorderTraverseTreeGenerateCode(node);
         Print2Target("STOP");
@@ -47,6 +56,7 @@ public class CodeGenerator {
         else if (node.nonterminal.equals("Block")) {
             scopeCount += varCounter;
             scopeCountStack.add(scopeCount);
+            int prevVars = varCounter;
             varCounter = 0;
 
             /*Traverse the rest of the block first vars and stats*/
@@ -62,6 +72,8 @@ public class CodeGenerator {
 
             /*Pop scope from scope counting stack*/
             scopeCountStack.pop();
+
+            varCounter = prevVars;
         }
         /*Came to var initilization add to bottom of the .asm file*/
         else if (node.nonterminal.equals("Vars")) {
@@ -152,6 +164,7 @@ public class CodeGenerator {
             /*Get distance from top of stack*/
             int position = (variableStack.varStack.size() - 1) - variableStack.Find(var);
 
+            /*Write to virtual machine stack*/
             Print2Target("STACKW " + position);
         }
 
@@ -223,45 +236,48 @@ public class CodeGenerator {
             int Mnode = -1;
             int Nnode = -1;
             String MathType = "";
+            String temp = "";
 
-            /*Determine if there is an M and N node or just M */
-            for (int i = 0; i < node.childNodes.size(); i++) {
-                /*Find left child*/
-                if (node.childNodes.get(i).nonterminal.equals("M")) {
-                    Mnode = i;
-                }
-                /*Find right child*/
-                else if (node.childNodes.get(i).nonterminal.equals("N")) {
-                    Nnode = i;
-                }
-            }
-
-            /*If there is a right child process it*/
-            if(Nnode > -1) {
-                PreorderTraverseTreeGenerateCode(node.childNodes.get(Nnode));
-
-                /*Figure out math sign used*/
-                for (int i = 0; i < node.tokenArray.size(); i++) {
-                    if (node.tokenArray.get(i) != null) {
-                        MathType = node.tokenArray.get(i).getTokenID();
+                /*Determine if there is an M and N node or just M */
+                for (int i = 0; i < node.childNodes.size(); i++) {
+                    /*Find left child*/
+                    if (node.childNodes.get(i).nonterminal.equals("M")) {
+                        Mnode = i;
+                    }
+                    /*Find right child*/
+                    else if (node.childNodes.get(i).nonterminal.equals("N")) {
+                        Nnode = i;
                     }
                 }
-            }
 
-            String temp = genTemp();
-            Print2Target("STORE " + temp);
+                /*If there is a right child process it*/
+                if (Nnode > -1) {
+                    PreorderTraverseTreeGenerateCode(node.childNodes.get(Nnode));
 
-            /*Proccess left child now*/
-            if (Mnode > -1) {
-                PreorderTraverseTreeGenerateCode(node.childNodes.get(Mnode));
-            }
-            if (!MathType.equals("")) {
-                if (MathType.equals("multiplyTK")) {
-                    Print2Target("MULT " + temp);
-                } else {
-                    Print2Target("DIV " + temp);
+                    /*Figure out math sign used*/
+                    for (int i = 0; i < node.tokenArray.size(); i++) {
+                        if (node.tokenArray.get(i) != null) {
+                            MathType = node.tokenArray.get(i).getTokenID();
+                        }
+                    }
+
+
                 }
-            }
+
+                temp = genTemp();
+                Print2Target("STORE " + temp);
+
+                /*Proccess left child now*/
+                if (Mnode > -1) {
+                    PreorderTraverseTreeGenerateCode(node.childNodes.get(Mnode));
+                }
+                if (!MathType.equals("")) {
+                    if (MathType.equals("multiplyTK")) {
+                        Print2Target("MULT " + temp);
+                    } else {
+                        Print2Target("DIV " + temp);
+                    }
+                }
 
         }
         else if(node.nonterminal.equals("M")){
@@ -296,11 +312,21 @@ public class CodeGenerator {
             int expr2 = 2;
             int stat = 3;
 
+//            String temp1 = genTemp();
+//            String temp2 = genTemp();
+
             PreorderTraverseTreeGenerateCode(node.childNodes.get(expr2));
-            String temp = genTemp();
-            Print2Target("STORE " + temp);
+//            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
+            String temp1 = genTemp();
+            Print2Target("STORE " + temp1);
             PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
-            Print2Target("SUB " + temp);
+//            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr2));
+//            String temp2 = genTemp();
+//            Print2Target("STORE " + temp2);
+//            Print2Target("SUB " + temp1);
+
+//            Print2Target("LOAD " + temp1);
+            Print2Target("SUB " + temp1);
 
             String label = genIfLabel();
             generateRO(node.childNodes.get(ro), label);
@@ -319,6 +345,11 @@ public class CodeGenerator {
             String loopLabel = genLoopLabel();
             String outLabel = genOutLabel();
 
+
+//            String temp1 = genTemp();
+//            String temp2 = genTemp();
+
+
             /*Commented code is second version*/
             Print2Target(loopLabel + ": NOOP");
             PreorderTraverseTreeGenerateCode(node.childNodes.get(expr2));
@@ -327,10 +358,10 @@ public class CodeGenerator {
             Print2Target("STORE " + temp1);
             PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
 //            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr2));
-            String temp2 = genTemp();
+//            String temp2 = genTemp();
 //            Print2Target("STORE " + temp2);
 //            Print2Target("LOAD " + temp1);
-            Print2Target("SUB " + temp2);
+            Print2Target("SUB " + temp1);
 
 //            Print2Target("SUB " + temp1);
 //            PreorderTraverseTreeGenerateCode(node.childNodes.get(ro));
@@ -341,47 +372,6 @@ public class CodeGenerator {
             Print2Target("BR " + loopLabel);
             Print2Target(outLabel + ": NOOP");
         }
-
-//        else if (node.nonterminal.equals("RO")){
-//            StringBuilder relationalOperator = new StringBuilder();
-//
-//            for(int i = 0; i < node.tokenArray.size(); i++){
-//                relationalOperator.append(node.tokenArray.get(i).getTokenStr());
-//            }
-//
-//            switch(relationalOperator.toString()){
-//                case ">":
-//                    Print2Target("BRZNEG " + outLabel);
-//                    break;
-//
-//                case "<":
-//                    Print2Target("BRZPOS " + outLabel);
-//                    break;
-//
-//                case ">>":
-//                    Print2Target("BRNEG " + outLabel);
-//                    break;
-//
-//                case "<<":
-//                    Print2Target("BRPOS " + outLabel);
-//                    break;
-//
-//                case "=":
-//                    Print2Target("BRPOS " + outLabel);
-//                    Print2Target("BRNEG " + outLabel);
-//                    break;
-//
-//                case "<>":
-//                    Print2Target("BRZERO " + outLabel);
-//                    break;
-//            }
-//
-//
-//        }
-
-
-
-
 
         /*Keep traversing through the tree even if node was not came to*/
         else {

@@ -11,6 +11,7 @@ public class KeywordCheck {
 
     private Hashtable<String, String> keyWordHash = new Hashtable<>();
 
+    /*Table to store all keywords for node token*/
     private void fillTable(){
         this.keyWordHash.put("start", "StartKwTK");
         this.keyWordHash.put("stop", "StopKwTK");

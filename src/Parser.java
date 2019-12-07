@@ -95,7 +95,7 @@ public class Parser {
         /*var identifier : Integer <vars> or empty*/
         if(token.getTokenID().equals("VarKwTK")){
             /*Add token to array and get next */
-//            node.tokenArray.add(token);
+            /*node.tokenArray.add(token);*/
             token = scanner.getToken(characterArrayList);
 
             if(token.getTokenID().equals("idTK")){
@@ -103,7 +103,7 @@ public class Parser {
                 token = scanner.getToken(characterArrayList);
 
                 if(token.getTokenID().equals("colonTK")){
-//                    node.tokenArray.add(token);
+                    /*node.tokenArray.add(token);*/
                     token = scanner.getToken(characterArrayList);
 
                     if(token.getTokenID().equals("numTK")){
@@ -147,8 +147,8 @@ public class Parser {
             /*if we get a semicolon call for mStat function for nonTerminal*/
             if(token.getTokenID().equals("semicolonTK")) {
 
-                /*Add token to node and get next*/
-//                node.tokenArray.add(token);
+                /*Add toke;n to node and get next*/
+                /*node.tokenArray.add(token);*/
                 token = scanner.getToken(characterArrayList);
 
                 node.childNodes.add(mStat());
@@ -180,7 +180,7 @@ public class Parser {
             /*successful stat should return semicolon*/
             if(token.getTokenID().equals("semicolonTK")){
                 /*Add semicolon token and get next*/
-//                node.tokenArray.add(token);
+                /*node.tokenArray.add(token);*/
                 token = scanner.getToken(characterArrayList);
 
                 node.childNodes.add(mStat());
@@ -227,7 +227,7 @@ public class Parser {
         TreeNode node = new TreeNode("in");
 
         if(token.getTokenID().equals("InKwTK")){
-//            node.tokenArray.add(token);
+            /*node.tokenArray.add(token);*/
             token = scanner.getToken(characterArrayList);
 
             if(token.getTokenID().equals("idTK")){
@@ -251,7 +251,7 @@ public class Parser {
 
         if(token.getTokenID().equals("OutKwTK")){
             /*add out token and get next*/
-//            node.tokenArray.add(token);
+            /*node.tokenArray.add(token);*/
             token = scanner.getToken(characterArrayList);
 
             node.childNodes.add(expr());
@@ -340,7 +340,7 @@ public class Parser {
 
         if(token.getTokenID().equals("LBracketTK")){
             /*add [ get next token*/
-//            node.tokenArray.add(token);
+            /*node.tokenArray.add(token);*/
             token = scanner.getToken(characterArrayList);
             node.childNodes.add(expr());
              if(token.getTokenID().equals("RBracketTK")){
@@ -375,15 +375,15 @@ public class Parser {
         TreeNode node = new TreeNode("ifstmt");
 
         if(token.getTokenID().equals("CondKwTK")){
-//            node.tokenArray.add(token);
+            /*node.tokenArray.add(token);*/
             token = scanner.getToken(characterArrayList);
 
             if(token.getTokenID().equals("LParenthTK")){
-//                node.tokenArray.add(token);
+                /*node.tokenArray.add(token);*/
                 token = scanner.getToken(characterArrayList);
 
                 if(token.getTokenID().equals("LParenthTK")){
-//                    node.tokenArray.add(token);
+                    /*node.tokenArray.add(token);*/
                     token = scanner.getToken(characterArrayList);
 
                     node.childNodes.add(expr());
@@ -391,11 +391,11 @@ public class Parser {
                     node.childNodes.add(expr());
 
                     if(token.getTokenID().equals("RParenthTK")){
-//                        node.tokenArray.add(token);
+                        /*node.tokenArray.add(token);*/
                         token = scanner.getToken(characterArrayList);
 
                         if(token.getTokenID().equals("RParenthTK")){
-//                            node.tokenArray.add(token);
+                            /*node.tokenArray.add(token);*/
                             token = scanner.getToken(characterArrayList);
                             node.childNodes.add(stat());
 
@@ -427,15 +427,15 @@ public class Parser {
         TreeNode node = new TreeNode("loop");
 
         if(token.getTokenID().equals("IterateKwTK")){
-//            node.tokenArray.add(token);
+            /*node.tokenArray.add(token);*/
             token = scanner.getToken(characterArrayList);
 
             if(token.getTokenID().equals("LParenthTK")) {
-//                node.tokenArray.add(token);
+                /*node.tokenArray.add(token);*/
                 token = scanner.getToken(characterArrayList);
 
                 if (token.getTokenID().equals("LParenthTK")) {
-//                    node.tokenArray.add(token);
+                    /*node.tokenArray.add(token);*/
                     token = scanner.getToken(characterArrayList);
 
                     node.childNodes.add(expr());
@@ -443,11 +443,11 @@ public class Parser {
                     node.childNodes.add(expr());
 
                     if(token.getTokenID().equals("RParenthTK")){
-//                        node.tokenArray.add(token);
+                        /*node.tokenArray.add(token);*/
                         token = scanner.getToken(characterArrayList);
 
                         if(token.getTokenID().equals("RParenthTK")){
-//                            node.tokenArray.add(token);
+                            /*node.tokenArray.add(token);*/
                             token = scanner.getToken(characterArrayList);
                             node.childNodes.add(stat());
                         }
@@ -480,11 +480,11 @@ public class Parser {
             token = scanner.getToken(characterArrayList);
 
             if(token.getTokenID().equals("lessThanTK")){
-//                node.tokenArray.add(token);
+                /*node.tokenArray.add(token);*/
                 token = scanner.getToken(characterArrayList);
 
                 if(token.getTokenID().equals("lessThanTK")){
-//                    node.tokenArray.add(token);
+                    /*node.tokenArray.add(token);*/
                     token = scanner.getToken(characterArrayList);
                     node.childNodes.add(expr());
                 }
@@ -518,7 +518,7 @@ public class Parser {
                 return node;
             }
             /*if next token is greater than consume*/
-            else if(token.getTokenID().equals("greaterThankTK")){
+            else if(token.getTokenID().equals("greaterThanTK")){
                 node.tokenArray.add(token);
                 token = scanner.getToken(characterArrayList);
 

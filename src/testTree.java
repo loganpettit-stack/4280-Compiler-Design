@@ -71,6 +71,7 @@ public class testTree {
             * reset the var counter */
             scopeCount += varCounter;
             scopeCountStack.add(scopeCount);
+            int prevVars = varCounter;
             varCounter = 0;
 
             /*Traverse nodes to find block vars*/
@@ -85,6 +86,8 @@ public class testTree {
 
             /*Pop scope from scope counting stack*/
             scopeCountStack.pop();
+
+            varCounter = prevVars;
         }
 
         /* if node name is vars find token in it that has idTk and
