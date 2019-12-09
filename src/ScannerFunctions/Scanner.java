@@ -99,7 +99,7 @@ public class Scanner {
             /* if current state is final state break
             /* loop and return toke */
             if (currentState > 1000) {
-//                index += 1;
+                /*index += 1;*/
                 flag = false;
             }
             /* if id error, or invalid character*/

@@ -1,6 +1,14 @@
-import DataStructures.Token;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+/* Author: Logan Pettit
+* Class: 4280 Compiler Design
+* Description: This is the code generation part of the compiler. The program begins a preorder traversal
+* of the nodes and generates code based on the type of node that it comes to. The output is redirected into
+* [input filename].asm
+* */
 
+
+
+
+import DataStructures.Token;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,6 +42,7 @@ public class CodeGenerator {
         PreorderTraverseTreeGenerateCode(node);
         Print2Target("STOP");
         addTempVars();
+        System.out.println("Input file compiled to " + fileName);
     }
 
     private void PreorderTraverseTreeGenerateCode(TreeNode node) {
@@ -260,8 +269,6 @@ public class CodeGenerator {
                             MathType = node.tokenArray.get(i).getTokenID();
                         }
                     }
-
-
                 }
 
                 temp = genTemp();
@@ -307,25 +314,44 @@ public class CodeGenerator {
         }
 
         else if(node.nonterminal.equals("ifstmt")){
-            int expr1 = 0;
-            int ro = 1;
-            int expr2 = 2;
-            int stat = 3;
+            int expr1 = -1;
+            int ro = -1;
+            int expr2 = -1;
+            int stat = -1;
 
-//            String temp1 = genTemp();
-//            String temp2 = genTemp();
+            for (int i = 0; i < node.childNodes.size(); i++){
+                if (node.childNodes.get(i).nonterminal.equals("expr")){
+                    expr1 = i;
+
+                    for(int j = i; j < node.childNodes.size(); j++){
+                        if(node.childNodes.get(j).nonterminal.equals("RO")) {
+                            ro = j;
+
+                            for (int k = j; k < node.childNodes.size(); k++) {
+                                if(node.childNodes.get(k).nonterminal.equals("expr")) {
+                                    expr2 = k;
+
+                                    for(int m = k; m < node.childNodes.size(); m++){
+                                        if(node.childNodes.get(m).nonterminal.equals("stat")){
+                                            stat = m;
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
 
             PreorderTraverseTreeGenerateCode(node.childNodes.get(expr2));
-//            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
             String temp1 = genTemp();
             Print2Target("STORE " + temp1);
-            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
-//            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr2));
-//            String temp2 = genTemp();
-//            Print2Target("STORE " + temp2);
-//            Print2Target("SUB " + temp1);
 
-//            Print2Target("LOAD " + temp1);
+            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
             Print2Target("SUB " + temp1);
 
             String label = genIfLabel();
@@ -337,34 +363,49 @@ public class CodeGenerator {
         }
 
         else if(node.nonterminal.equals("loop")){
-            int expr1 = 0;
-            int ro = 1;
-            int expr2 = 2;
-            int stat = 3;
+            int expr1 = -1;
+            int ro = -1;
+            int expr2 = -1;
+            int stat = -1;
+
+            for (int i = 0; i < node.childNodes.size(); i++){
+                if (node.childNodes.get(i).nonterminal.equals("expr")){
+                    expr1 = i;
+
+                    for(int j = i; j < node.childNodes.size(); j++){
+                        if(node.childNodes.get(j).nonterminal.equals("RO")) {
+                            ro = j;
+
+                            for (int k = j; k < node.childNodes.size(); k++) {
+                                if(node.childNodes.get(k).nonterminal.equals("expr")) {
+                                    expr2 = k;
+
+                                    for(int m = k; m < node.childNodes.size(); m++){
+                                        if(node.childNodes.get(m).nonterminal.equals("stat")){
+                                            stat = m;
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
 
             String loopLabel = genLoopLabel();
             String outLabel = genOutLabel();
 
-
-//            String temp1 = genTemp();
-//            String temp2 = genTemp();
-
-
-            /*Commented code is second version*/
             Print2Target(loopLabel + ": NOOP");
             PreorderTraverseTreeGenerateCode(node.childNodes.get(expr2));
-//            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
             String temp1 = genTemp();
             Print2Target("STORE " + temp1);
-            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
-//            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr2));
-//            String temp2 = genTemp();
-//            Print2Target("STORE " + temp2);
-//            Print2Target("LOAD " + temp1);
-            Print2Target("SUB " + temp1);
 
-//            Print2Target("SUB " + temp1);
-//            PreorderTraverseTreeGenerateCode(node.childNodes.get(ro));
+            PreorderTraverseTreeGenerateCode(node.childNodes.get(expr1));
+            Print2Target("SUB " + temp1);
 
             generateRO(node.childNodes.get(ro), outLabel);
             PreorderTraverseTreeGenerateCode(node.childNodes.get(stat));
@@ -417,7 +458,6 @@ public class CodeGenerator {
         }
 
     }
-
 
     /*Find token in with Id in tokens tokenArray*/
     private Token NumTkFind(TreeNode node) {
